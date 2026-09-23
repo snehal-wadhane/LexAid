@@ -1,0 +1,146 @@
+"""
+rag.py — Retrieval + streaming generation.
+Loaded once by main.py; model & collection are module-level singletons.
+"""
+
+import json
+import os
+from pathlib import Path
+from typing import Generator, Optional
+
+from dotenv import load_dotenv
+from groq import Groq
+from sentence_transformers import SentenceTransformer
+import chromadb
+
+load_dotenv()
+
+CHROMA_DIR  = Path(os.getenv("CHROMA_DIR", r"D:\LexAid\backend\chroma_db"))
+EMBED_MODEL = "intfloat/multilingual-e5-small"
+COLLECTION  = "lexaid_corpus"
+GROQ_MODEL         = "openai/gpt-oss-120b"
+GROQ_MODEL_FALLBACK = "openai/gpt-oss-20b"
+TOP_K       = 6
+
+SYSTEM_PROMPT = """You are LexAid, an Indian legal information assistant. You help ordinary citizens understand their rights under Indian law.
+
+Rules:
+1. Answer ONLY from the statutory sections provided below. Do not use outside knowledge.
+2. Cite the Act name and section number for every legal point (e.g., "Under Section 14 of the Consumer Protection Act, 2019...").
+3. Use simple, plain language — no legal jargon unless unavoidable, and explain it when you use it.
+4. If the provided sections don't fully answer the question, say so clearly.
+5. Always end your response with this exact disclaimer on its own line:
+
+---
+*LexAid provides legal information based on publicly available Indian law. This is not legal advice and does not create a lawyer-client relationship.*"""
+
+_embed_model: Optional[SentenceTransformer] = None
+_collection = None
+_groq_client: Optional[Groq] = None
+
+
+def _get_embed_model() -> SentenceTransformer:
+    global _embed_model
+    if _embed_model is None:
+        _embed_model = SentenceTransformer(EMBED_MODEL)
+    return _embed_model
+
+
+def _get_collection():
+    global _collection
+    if _collection is None:
+        client = chromadb.PersistentClient(path=str(CHROMA_DIR))
+        _collection = client.get_collection(COLLECTION)
+    return _collection
+
+
+def _get_groq() -> Groq:
+    global _groq_client
+    if _groq_client is None:
+        _groq_client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+    return _groq_client
+
+
+def retrieve(query: str, k: int = TOP_K, category: Optional[str] = None) -> list[dict]:
+    model = _get_embed_model()
+    # e5 models need "query: " prefix for retrieval queries
+    embedding = model.encode(f"query: {query}", normalize_embeddings=True).tolist()
+
+    where = {"category": category} if category else None
+    results = _get_collection().query(
+        query_embeddings=[embedding],
+        n_results=k,
+        where=where,
+        include=["documents", "metadatas", "distances"],
+    )
+
+    chunks = []
+    for doc, meta, dist in zip(
+        results["documents"][0],
+        results["metadatas"][0],
+        results["distances"][0],
+    ):
+        chunks.append({
+            "text":     doc,
+            "act_name": meta["act_name"],
+            "short":    meta["short"],
+            "category": meta["category"],
+            "score":    round(1 - dist, 4),
+        })
+    return chunks
+
+
+def stream_answer(
+    question: str,
+    category: Optional[str] = None,
+) -> Generator[str, None, None]:
+    """Yields SSE-formatted strings: sources event, token events, done event."""
+
+    chunks = retrieve(question, k=TOP_K, category=category)
+    if not chunks:
+        yield f"data: {json.dumps({'type':'error','message':'No relevant statutory sections found for this question.'})}\n\n"
+        return
+
+    # Send sources immediately so UI can show them before tokens arrive
+    sources = list({c["act_name"] for c in chunks})
+    yield f"data: {json.dumps({'type':'sources','sources':sources})}\n\n"
+
+    context_parts = []
+    for i, c in enumerate(chunks, 1):
+        context_parts.append(f"[Source {i} — {c['act_name']}]\n{c['text']}")
+    context = "\n\n---\n\n".join(context_parts)
+
+    groq = _get_groq()
+    messages = [
+        {"role": "system", "content": SYSTEM_PROMPT},
+        {
+            "role": "user",
+            "content": (
+                f"Relevant statutory sections:\n\n{context}\n\n"
+                f"Question: {question}"
+            ),
+        },
+    ]
+    try:
+        stream = groq.chat.completions.create(
+            model=GROQ_MODEL,
+            messages=messages,
+            temperature=0.1,
+            max_tokens=1024,
+            stream=True,
+        )
+    except Exception:
+        stream = groq.chat.completions.create(
+            model=GROQ_MODEL_FALLBACK,
+            messages=messages,
+            temperature=0.1,
+            max_tokens=1024,
+            stream=True,
+        )
+
+    for chunk in stream:
+        delta = chunk.choices[0].delta.content
+        if delta:
+            yield f"data: {json.dumps({'type':'token','text':delta})}\n\n"
+
+    yield f"data: {json.dumps({'type':'done','chunks':[{'act':c['act_name'],'score':c['score']} for c in chunks]})}\n\n"
