@@ -1,0 +1,46 @@
+---
+title: LexAid — System Architecture
+---
+flowchart TB
+    subgraph CLIENT["Client Layer"]
+        WEB["🌐 Web Browser\nNext.js 14 / React"]
+        WA["📱 WhatsApp\nMeta Business API"]
+    end
+
+    subgraph BACKEND["Backend — FastAPI (Python 3.10)"]
+        API["FastAPI\n/api/query  /api/retrieve  /api/acts"]
+        RAG["RAG Pipeline\nrag.py"]
+        EMBED["multilingual-e5-small\nLocal Embedding Model"]
+        CAT["Category Auto-Detector\n_detect_category()"]
+    end
+
+    subgraph STORAGE["Storage Layer"]
+        CHROMA[("ChromaDB\n2,255 chunks | 17 Acts\nCosine Similarity")]
+        PDF[("PDF Statute Database\n17 Indian Acts\nD:/LexAid/Database/")]
+        SUPA[("Supabase Postgres\nAuth + Session History\n[Planned]")]
+    end
+
+    subgraph EXTERNAL["External APIs"]
+        GROQ["Groq Cloud LLM\ngpt-oss-120b\n(fallback: gpt-oss-20b)"]
+    end
+
+    WEB -- "POST /api/query\n{question, category}" --> API
+    WA -- "Webhook POST\n[Planned]" --> API
+    API --> RAG
+    RAG --> CAT
+    CAT -- "Auto-detected category\n(property / labour / criminal …)" --> EMBED
+    EMBED -- "query: {text}\nnormalized embedding" --> CHROMA
+    CHROMA -- "Top-8 chunks +\ncosine distances" --> RAG
+    RAG -- "system_prompt +\ncontext + question" --> GROQ
+    GROQ -- "SSE token stream" --> API
+    API -- "SSE events:\nsources → tokens → done" --> WEB
+
+    PDF -- "ingest.py\n(one-time)" --> EMBED
+    EMBED -- "passage: {chunk}\nembeddings" --> CHROMA
+
+    API -. "session history\n[Planned]" .-> SUPA
+
+    style CLIENT   fill:#EBF4FB,stroke:#5B9BD5
+    style BACKEND  fill:#FFF3E0,stroke:#E65100
+    style STORAGE  fill:#E8F5E9,stroke:#2E7D32
+    style EXTERNAL fill:#F3E5F5,stroke:#6A1B9A

@@ -1,0 +1,40 @@
+---
+title: LexAid — Data Flow Diagram (Level 1)
+---
+flowchart LR
+    subgraph INGEST["① Ingestion Pipeline  (one-time)"]
+        direction LR
+        PDF_SRC[/"📄 PDF Statutes\n17 Indian Acts"/]
+        PYMUPDF["PyMuPDF\nText Extraction"]
+        CHUNKER["Section-Based\nChunker\n(regex + sliding window)"]
+        EMBEDDER_I["multilingual-e5-small\npassage: {chunk}"]
+        DB_WRITE[("ChromaDB\nVector Store\n2,255 chunks")]
+
+        PDF_SRC --> PYMUPDF
+        PYMUPDF --> CHUNKER
+        CHUNKER --> EMBEDDER_I
+        EMBEDDER_I --> DB_WRITE
+    end
+
+    subgraph QUERY["② Query Pipeline  (per request)"]
+        direction LR
+        USER_Q[/"👤 User Question\n(text, any language)"/]
+        CATDET["Category\nAuto-Detector"]
+        EMBEDDER_Q["multilingual-e5-small\nquery: {text}"]
+        DB_READ[("ChromaDB\nTop-8 Chunks\n(cosine similarity)")]
+        GROQ_LLM["Groq LLM\ngpt-oss-120b\n(streaming)"]
+        SSE_OUT[/"📡 SSE Response\nsources → tokens → done"/]
+
+        USER_Q --> CATDET
+        CATDET -- "category filter\n(property/labour/…)" --> DB_READ
+        USER_Q --> EMBEDDER_Q
+        EMBEDDER_Q -- "query embedding" --> DB_READ
+        DB_READ -- "context chunks\n+ act citations" --> GROQ_LLM
+        USER_Q -- "question" --> GROQ_LLM
+        GROQ_LLM --> SSE_OUT
+    end
+
+    DB_WRITE -. "shared store" .-> DB_READ
+
+    style INGEST fill:#E8F5E9,stroke:#2E7D32
+    style QUERY  fill:#E3F2FD,stroke:#1565C0

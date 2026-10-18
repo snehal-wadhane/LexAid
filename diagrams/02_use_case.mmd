@@ -1,0 +1,34 @@
+---
+title: LexAid — Use Case Diagram
+---
+graph LR
+    CITIZEN(["👤 Citizen"])
+    ADMIN(["🔧 Admin"])
+
+    subgraph SYSTEM["LexAid System"]
+        UC1(["Ask Legal Question"])
+        UC2(["Use Triage Wizard"])
+        UC3(["View Source Sections"])
+        UC4(["Query via WhatsApp"])
+        UC5(["Select Language"])
+        UC6(["View Act Details"])
+        UC7(["Ingest Documents"])
+        UC8(["Monitor System Health"])
+
+        UC1 -- "includes" --> UC3
+        UC2 -- "extends" --> UC1
+        UC4 -- "extends" --> UC1
+        UC5 -- "extends" --> UC1
+    end
+
+    CITIZEN --> UC1
+    CITIZEN --> UC2
+    CITIZEN --> UC4
+    CITIZEN --> UC5
+    CITIZEN --> UC6
+    ADMIN --> UC7
+    ADMIN --> UC8
+
+    style CITIZEN fill:#D1A356,stroke:#905B3E,color:#000
+    style ADMIN   fill:#905B3E,stroke:#242425,color:#fff
+    style SYSTEM  fill:#F5F0EB,stroke:#905B3E

@@ -23,7 +23,7 @@ COLLECTION   = "lexaid_corpus"
 
 # Corpus map — filename -> metadata (skip duplicates & textbook)
 ACT_MAP = {
-    "Indian Penal Code, 1860.pdf":                                         {"act_name": "Indian Penal Code, 1860",                                       "short": "IPC",         "category": "criminal"},
+    "1742378582_Indian_Penal_Code_1860.pdf":                                 {"act_name": "Indian Penal Code, 1860",                                       "short": "IPC",         "category": "criminal"},
     "250883_english_01042024.pdf":                                         {"act_name": "Bharatiya Nyaya Sanhita, 2023",                                  "short": "BNS",         "category": "criminal"},
     "Bharatiya_Nagarik_Suraksha_Sanhita,_2023.pdf":                        {"act_name": "Bharatiya Nagarik Suraksha Sanhita, 2023",                       "short": "BNSS",        "category": "criminal"},
     "250882_english_01042024_0.pdf":                                       {"act_name": "Bharatiya Sakshya Adhiniyam, 2023",                              "short": "BSA",         "category": "evidence"},
@@ -37,6 +37,8 @@ ACT_MAP = {
     "202509111900892266.pdf":                                              {"act_name": "Maharashtra Rent Control Act, 1999",                             "short": "MRCA",        "category": "property"},
     "20240716890312078.pdf":                                               {"act_name": "Constitution of India (as on 1 May 2024)",                        "short": "Constitution","category": "constitutional"},
     "202504081796627129.pdf":                                              {"act_name": "Legal Services Authorities Act, 1987",                           "short": "LSAA",        "category": "legal_services"},
+    "NI.pdf":                                                              {"act_name": "Negotiable Instruments Act, 1881",                                "short": "NIA",         "category": "commercial"},
+    "domviolence.pdf":                                                     {"act_name": "Protection of Women from Domestic Violence Act, 2005",            "short": "PWDVA",       "category": "civil_rights"},
 }
 
 

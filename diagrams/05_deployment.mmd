@@ -1,0 +1,42 @@
+---
+title: LexAid — Deployment Diagram
+---
+graph TB
+    subgraph DEVICES["User Devices"]
+        BROWSER["🌐 Web Browser\nChrome / Firefox / Edge"]
+        PHONE["📱 WhatsApp\nAny Android / iOS device"]
+    end
+
+    subgraph VERCEL["Vercel CDN  (Frontend)"]
+        NEXTJS["Next.js 14\nApp Router + SSR\nEdge Network (Global)"]
+    end
+
+    subgraph RAILWAY["Railway / Render  (Backend)"]
+        FASTAPI["FastAPI + Uvicorn\nPython 3.10"]
+        CHROMA_D[("ChromaDB\nPersistent Disk\n2,255 chunks")]
+        E5["multilingual-e5-small\nLocal Model (CPU)"]
+        FASTAPI --> CHROMA_D
+        FASTAPI --> E5
+    end
+
+    subgraph GROQ_CLOUD["Groq Cloud"]
+        LLM["gpt-oss-120b\n(fallback: gpt-oss-20b)\nStateless API"]
+    end
+
+    subgraph SUPABASE["Supabase  [Planned]"]
+        PG[("Postgres\nUser sessions\nQuery logs")]
+        AUTH["Auth Service\nOptional login"]
+    end
+
+    BROWSER -- "HTTPS" --> NEXTJS
+    PHONE -- "WhatsApp Webhook\n[Planned]" --> FASTAPI
+    NEXTJS -- "REST + SSE\nHTTPS" --> FASTAPI
+    FASTAPI -- "Groq API\nHTTPS" --> LLM
+    FASTAPI -. "Session store\n[Planned]" .-> PG
+    NEXTJS -. "Auth check\n[Planned]" .-> AUTH
+
+    style DEVICES   fill:#E3F2FD,stroke:#1565C0
+    style VERCEL    fill:#F3E5F5,stroke:#6A1B9A
+    style RAILWAY   fill:#FFF3E0,stroke:#E65100
+    style GROQ_CLOUD fill:#E8F5E9,stroke:#2E7D32
+    style SUPABASE  fill:#FCE4EC,stroke:#880E4F,stroke-dasharray:5 5

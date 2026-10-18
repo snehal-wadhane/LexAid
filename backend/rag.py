@@ -22,6 +22,50 @@ GROQ_MODEL         = "openai/gpt-oss-120b"
 GROQ_MODEL_FALLBACK = "openai/gpt-oss-20b"
 TOP_K       = 6
 
+# Keyword → category routing so casual queries skip the wrong acts
+_CATEGORY_KEYWORDS: dict[str, list[str]] = {
+    "property":     ["rent", "landlord", "tenant", "eviction", "lease", "1rk", "1bhk",
+                     "flat", "accommodation", "paying rent", "house rent", "room rent",
+                     "security deposit", "notice to vacate", "rental", "monthly rent"],
+    "labour":       ["salary", "wage", "wages", "fired", "dismissed", "retrenchment",
+                     "employment", "epf", "gratuity", "provident fund", "factory",
+                     "worker", "employee", "employer", "overtime", "minimum wage",
+                     "job", "termination", "layoff"],
+    "consumer":     ["product", "refund", "defective", "consumer", "complaint", "forum",
+                     "service deficiency", "goods", "warranty", "purchase", "ecommerce",
+                     "amazon", "flipkart", "bank fraud", "insurance claim"],
+    "criminal":     ["murder", "theft", "assault", "fir", "police", "arrest", "bail",
+                     "crime", "rape", "robbery", "kidnap", "extortion", "bribe",
+                     "cheating", "fraud", "harass", "section 498", "dowry"],
+    "administrative":["rti", "right to information", "government", "public authority",
+                      "information denied", "pio", "appellate authority"],
+    "civil_rights": ["domestic violence", "disability", "discrimination", "atrocity",
+                     "sc/st", "scheduled caste", "scheduled tribe", "women rights",
+                     "protection order", "maintenance order", "shelter home"],
+    "commercial":   ["cheque bounce", "cheque dishonour", "promissory note",
+                     "bill of exchange", "negotiable instrument", "138 ni act",
+                     "demand notice", "dishonoured"],
+    "evidence":     ["evidence", "witness", "document", "proof", "admissibility"],
+}
+
+
+def _detect_category(query: str) -> Optional[str]:
+    """Return the best-matching category or None if ambiguous."""
+    q = query.lower()
+    scores: dict[str, int] = {}
+    for cat, keywords in _CATEGORY_KEYWORDS.items():
+        hits = sum(1 for kw in keywords if kw in q)
+        if hits:
+            scores[cat] = hits
+    if not scores:
+        return None
+    best_cat, best_score = max(scores.items(), key=lambda x: x[1])
+    # Only auto-filter when the signal is unambiguous (clear winner)
+    if best_score >= 1 and list(scores.values()).count(best_score) == 1:
+        return best_cat
+    return None
+
+
 SYSTEM_PROMPT = """You are LexAid, an Indian legal information assistant. You help ordinary citizens understand their rights under Indian law.
 
 Rules:
@@ -66,10 +110,14 @@ def retrieve(query: str, k: int = TOP_K, category: Optional[str] = None) -> list
     # e5 models need "query: " prefix for retrieval queries
     embedding = model.encode(f"query: {query}", normalize_embeddings=True).tolist()
 
-    where = {"category": category} if category else None
+    # Auto-detect category when caller didn't specify one
+    effective_category = category or _detect_category(query)
+    where = {"category": effective_category} if effective_category else None
+    # Use more chunks when filtered (fewer acts = richer context per act is fine)
+    actual_k = min(k + 2, 10) if effective_category else k
     results = _get_collection().query(
         query_embeddings=[embedding],
-        n_results=k,
+        n_results=actual_k,
         where=where,
         include=["documents", "metadatas", "distances"],
     )
@@ -126,7 +174,7 @@ def stream_answer(
             model=GROQ_MODEL,
             messages=messages,
             temperature=0.1,
-            max_tokens=1024,
+            max_tokens=2048,
             stream=True,
         )
     except Exception:
@@ -134,7 +182,7 @@ def stream_answer(
             model=GROQ_MODEL_FALLBACK,
             messages=messages,
             temperature=0.1,
-            max_tokens=1024,
+            max_tokens=2048,
             stream=True,
         )
 

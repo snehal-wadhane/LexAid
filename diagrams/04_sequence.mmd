@@ -1,0 +1,37 @@
+---
+title: LexAid — Sequence Diagram (Query Flow)
+---
+sequenceDiagram
+    actor U as 👤 User
+    participant FE as Frontend<br/>(Next.js 14)
+    participant BE as Backend<br/>(FastAPI)
+    participant CD as ChromaDB
+    participant GQ as Groq API
+
+    U->>FE: Type question<br/>(or select Triage category)
+    FE->>BE: POST /api/query<br/>{question, category}
+
+    Note over BE: Auto-detect category<br/>if not provided
+
+    BE->>BE: Embed query<br/>"query: {text}"
+    BE->>CD: query(embedding, top_k=8,<br/>where={category})
+    CD-->>BE: chunks[] + distances[]
+
+    Note over BE: Build context from<br/>top-8 statute chunks
+
+    BE->>GQ: stream(system_prompt +<br/>context + question,<br/>temp=0.1, max_tokens=2048)
+
+    BE-->>FE: SSE event: sources<br/>[act names]
+    FE-->>U: Show source badges
+
+    loop Token streaming
+        GQ-->>BE: delta token
+        BE-->>FE: SSE event: token
+        FE-->>U: Append to chat bubble
+    end
+
+    GQ-->>BE: stream complete
+    BE-->>FE: SSE event: done<br/>{chunks with scores}
+    FE-->>U: Render full Markdown<br/>+ citation badges
+
+    Note over U,FE: react-markdown + remark-gfm<br/>renders tables, bold, lists
