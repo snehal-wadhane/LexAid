@@ -154,9 +154,30 @@ export function ChatInterface() {
     await supabase.auth.signOut();
   };
 
+  // ── Feedback ─────────────────────────────────────────────────────────────────
+  const handleFeedback = async (msgIndex: number, rating: 1 | -1) => {
+    if (!user) return;
+    const msg = messages[msgIndex];
+    const prevMsg = messages[msgIndex - 1];
+    await supabase.from("feedback").insert({
+      user_id: user.id,
+      conversation_id: activeConvId,
+      question: prevMsg?.role === "user" ? prevMsg.content : null,
+      answer_snippet: msg.content.slice(0, 400),
+      rating,
+    });
+  };
+
   // ── Send query ──────────────────────────────────────────────────────────────
   const sendQuery = async (question: string, category?: string) => {
     if (!question.trim() || loading) return;
+
+    // Build history: skip welcome (index 0), skip streaming, last 6 messages
+    const history = messages
+      .slice(1)
+      .filter((m) => !m.streaming && m.content.trim())
+      .slice(-6)
+      .map((m) => ({ role: m.role, content: m.content }));
 
     const userMsg: Message = { role: "user", content: question.trim() };
     const assistantMsg: Message = { role: "assistant", content: "", streaming: true };
@@ -172,7 +193,7 @@ export function ChatInterface() {
       const res = await fetch(`${API}/api/query`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ question: question.trim(), language, category }),
+        body: JSON.stringify({ question: question.trim(), language, category, history }),
       });
 
       if (!res.ok) throw new Error(`Server error ${res.status}`);
@@ -409,7 +430,12 @@ export function ChatInterface() {
         {/* Messages */}
         <div className="flex-1 overflow-y-auto px-6 py-4">
           {messages.map((msg, i) => (
-            <MessageBubble key={i} msg={msg} />
+            <MessageBubble
+              key={i}
+              msg={msg}
+              msgIndex={i}
+              onFeedback={msg.role === "assistant" ? handleFeedback : undefined}
+            />
           ))}
           <div ref={bottomRef} />
         </div>

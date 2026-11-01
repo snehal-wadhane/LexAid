@@ -42,10 +42,16 @@ app.add_middleware(
 )
 
 
+class HistoryMessage(BaseModel):
+    role: str
+    content: str
+
+
 class QueryRequest(BaseModel):
     question: str
     language: str = "en"
     category: Optional[str] = None
+    history: list[HistoryMessage] = []
 
 
 @app.get("/health")
@@ -57,7 +63,13 @@ def health():
 def query(req: QueryRequest):
     def generate():
         try:
-            yield from stream_answer(req.question, category=req.category or None, language=req.language)
+            history = [{"role": h.role, "content": h.content} for h in req.history]
+            yield from stream_answer(
+                req.question,
+                category=req.category or None,
+                language=req.language,
+                history=history,
+            )
         except Exception as e:
             yield f"data: {json.dumps({'type':'error','message':str(e)})}\n\n"
 

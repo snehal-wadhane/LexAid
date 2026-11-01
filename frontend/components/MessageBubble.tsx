@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
@@ -16,7 +17,15 @@ interface Message {
   streaming?: boolean;
 }
 
-export function MessageBubble({ msg }: { msg: Message }) {
+interface Props {
+  msg: Message;
+  msgIndex?: number;
+  onFeedback?: (index: number, rating: 1 | -1) => void;
+}
+
+export function MessageBubble({ msg, msgIndex, onFeedback }: Props) {
+  const [rating, setRating] = useState<1 | -1 | null>(null);
+
   if (msg.role === "user") {
     return (
       <div className="flex justify-end mb-4">
@@ -26,6 +35,12 @@ export function MessageBubble({ msg }: { msg: Message }) {
       </div>
     );
   }
+
+  const handleFeedback = (value: 1 | -1) => {
+    if (rating !== null || !onFeedback || msgIndex === undefined) return;
+    setRating(value);
+    onFeedback(msgIndex, value);
+  };
 
   return (
     <div className="flex justify-start mb-4">
@@ -68,6 +83,44 @@ export function MessageBubble({ msg }: { msg: Message }) {
             </div>
           )}
         </div>
+
+        {/* Feedback buttons — only after streaming completes */}
+        {!msg.streaming && msg.content && onFeedback && msgIndex !== undefined && (
+          <div className="flex items-center gap-1.5 mt-1.5 px-1">
+            <span className="text-xs text-gray-400 mr-0.5">Helpful?</span>
+            <button
+              onClick={() => handleFeedback(1)}
+              title="Helpful"
+              className={`w-7 h-7 rounded-lg flex items-center justify-center text-sm transition-all ${
+                rating === 1
+                  ? "bg-green-100 text-green-600"
+                  : rating !== null
+                  ? "opacity-30 cursor-default"
+                  : "hover:bg-gray-100 text-gray-400 hover:text-green-600"
+              }`}
+            >
+              👍
+            </button>
+            <button
+              onClick={() => handleFeedback(-1)}
+              title="Not helpful"
+              className={`w-7 h-7 rounded-lg flex items-center justify-center text-sm transition-all ${
+                rating === -1
+                  ? "bg-red-100 text-red-500"
+                  : rating !== null
+                  ? "opacity-30 cursor-default"
+                  : "hover:bg-gray-100 text-gray-400 hover:text-red-500"
+              }`}
+            >
+              👎
+            </button>
+            {rating !== null && (
+              <span className="text-xs text-gray-400 ml-1">
+                {rating === 1 ? "Thanks!" : "Got it, we'll improve."}
+              </span>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
