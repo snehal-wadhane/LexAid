@@ -66,7 +66,7 @@ def _detect_category(query: str) -> Optional[str]:
     return None
 
 
-SYSTEM_PROMPT = """You are LexAid, an Indian legal information assistant. You help ordinary citizens understand their rights under Indian law.
+_BASE_SYSTEM_PROMPT = """You are LexAid, an Indian legal information assistant. You help ordinary citizens understand their rights under Indian law.
 
 Rules:
 1. Answer ONLY from the statutory sections provided below. Do not use outside knowledge.
@@ -77,6 +77,26 @@ Rules:
 
 ---
 *LexAid provides legal information based on publicly available Indian law. This is not legal advice and does not create a lawyer-client relationship.*"""
+
+_LANGUAGE_NAMES: dict[str, str] = {
+    "en": "English",
+    "hi": "Hindi",
+    "mr": "Marathi",
+    "ta": "Tamil",
+    "te": "Telugu",
+    "bn": "Bengali",
+}
+
+def _build_system_prompt(language: str) -> str:
+    lang = _LANGUAGE_NAMES.get(language, "English")
+    if language == "en":
+        return _BASE_SYSTEM_PROMPT
+    return (
+        _BASE_SYSTEM_PROMPT
+        + f"\n\n6. IMPORTANT: Respond entirely in {lang}. "
+        + "Keep Act names, section numbers, and legal citations in English, "
+        + f"but write all explanations and descriptions in {lang}."
+    )
 
 _embed_model: Optional[SentenceTransformer] = None
 _collection = None
@@ -141,6 +161,7 @@ def retrieve(query: str, k: int = TOP_K, category: Optional[str] = None) -> list
 def stream_answer(
     question: str,
     category: Optional[str] = None,
+    language: str = "en",
 ) -> Generator[str, None, None]:
     """Yields SSE-formatted strings: sources event, token events, done event."""
 
@@ -160,7 +181,7 @@ def stream_answer(
 
     groq = _get_groq()
     messages = [
-        {"role": "system", "content": SYSTEM_PROMPT},
+        {"role": "system", "content": _build_system_prompt(language)},
         {
             "role": "user",
             "content": (

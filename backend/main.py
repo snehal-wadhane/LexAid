@@ -57,7 +57,7 @@ def health():
 def query(req: QueryRequest):
     def generate():
         try:
-            yield from stream_answer(req.question, category=req.category or None)
+            yield from stream_answer(req.question, category=req.category or None, language=req.language)
         except Exception as e:
             yield f"data: {json.dumps({'type':'error','message':str(e)})}\n\n"
 

@@ -1,0 +1,33 @@
+==============================================================
+LexAid Evaluation Report
+Run: 2026-11-01 18:49:06
+Questions evaluated: 10
+==============================================================
+
+Overall
+----------------------------------------
+  Average score      : 0.558 / 1.000
+  Pass (≥0.60)       : 4/10  (40.0%)
+  Marginal (≥0.35)   : 9/10  (90.0%)
+  Act correctly cited: 8/10  (80.0%)
+  Section cited      : 0/10  (0.0%)
+  Avg response time  : 24.0s
+
+By category
+----------------------------------------
+  criminal          : 0.558  (n=10)
+
+Lowest scoring questions (need improvement)
+----------------------------------------
+  Q  7 score=0.31: What is dacoity and what is the punishment?
+  Q  1 score=0.36: What is the punishment for theft under the Indian Penal Code
+  Q  6 score=0.52: What is cheating under IPC and what is its punishment?
+  Q  4 score=0.54: What is the punishment for rape under IPC?
+  Q  9 score=0.59: What is criminal defamation under IPC?
+  Q 10 score=0.59: What is criminal trespass under IPC?
+  Q  3 score=0.62: What is culpable homicide not amounting to murder?
+  Q  8 score=0.62: What is the punishment for causing grievous hurt?
+  Q  2 score=0.71: What is the definition of murder under IPC?
+  Q  5 score=0.71: What constitutes criminal breach of trust under IPC?
+
+==============================================================

@@ -1,0 +1,252 @@
+[
+  {
+    "id": 1,
+    "question": "What is the punishment for theft under the Indian Penal Code?",
+    "category": "criminal",
+    "expected_acts": [
+      "IPC"
+    ],
+    "sources_returned": [
+      "Indian Penal Code, 1860",
+      "Bharatiya Nyaya Sanhita, 2023"
+    ],
+    "answer_snippet": "**Punishment for theft**\n\n- **Section\u202f379 of the Indian Penal Code, 1860** says that a person who commits theft can be punished with:\n  1. **Imprisonment** \u2013 for a term that may extend up to **three years**; **or**\n  2. **Fine** \u2013 a monetary penalty; **or**\n  3. **Both** imprisonment and fine togeth",
+    "elapsed_s": 3.54,
+    "act_hit": false,
+    "terms_found": [
+      "three years",
+      "imprisonment",
+      "fine"
+    ],
+    "terms_total": 4,
+    "term_ratio": 0.75,
+    "section_hit": false,
+    "disclaimer": true,
+    "score": 0.362
+  },
+  {
+    "id": 2,
+    "question": "What is the definition of murder under IPC?",
+    "category": "criminal",
+    "expected_acts": [
+      "IPC"
+    ],
+    "sources_returned": [
+      "Indian Penal Code, 1860",
+      "Bharatiya Nagarik Suraksha Sanhita, 2023",
+      "Bharatiya Nyaya Sanhita, 2023"
+    ],
+    "answer_snippet": "**Definition of murder under the Indian Penal Code (IPC)**  \n\n- **Section\u202f300 of the IPC** states that *\u201cculpable homicide is murder, except in the cases hereinafter excepted, if the act by which the death is caused is done*  \n\n  1. *with the intention of causing death;*  \n  2. *or with the intentio",
+    "elapsed_s": 11.38,
+    "act_hit": true,
+    "terms_found": [
+      "intention",
+      "death",
+      "culpable homicide"
+    ],
+    "terms_total": 4,
+    "term_ratio": 0.75,
+    "section_hit": false,
+    "disclaimer": true,
+    "score": 0.712
+  },
+  {
+    "id": 3,
+    "question": "What is culpable homicide not amounting to murder?",
+    "category": "criminal",
+    "expected_acts": [
+      "IPC"
+    ],
+    "sources_returned": [
+      "Indian Penal Code, 1860",
+      "Bharatiya Nyaya Sanhita, 2023"
+    ],
+    "answer_snippet": "**Culpable homicide not amounting to murder \u2013 what it means**\n\n1. **Basic definition of culpable homicide**  \n   - Under **Section\u202f299 of the Indian Penal Code (IPC), 1860**, a person commits *culpable homicide* when he causes the death of another by:\n     * an act done with the intention of causing",
+    "elapsed_s": 39.47,
+    "act_hit": true,
+    "terms_found": [
+      "knowledge",
+      "intention"
+    ],
+    "terms_total": 4,
+    "term_ratio": 0.5,
+    "section_hit": false,
+    "disclaimer": true,
+    "score": 0.625
+  },
+  {
+    "id": 4,
+    "question": "What is the punishment for rape under IPC?",
+    "category": "criminal",
+    "expected_acts": [
+      "IPC"
+    ],
+    "sources_returned": [
+      "Indian Penal Code, 1860",
+      "Protection of Children from Sexual Offences Act, 2012",
+      "Bharatiya Nyaya Sanhita, 2023"
+    ],
+    "answer_snippet": "**Punishment for rape under the Indian Penal Code (IPC)**  \n\n| Situation (as covered in the sections you provided) | What the law says | Section & Act |\n|---|---|---|\n| **Gang rape (a group of persons rapes a woman)** | Imprisonment for **at least 20\u202fyears** and up to **life imprisonment** (the rest",
+    "elapsed_s": 21.15,
+    "act_hit": true,
+    "terms_found": [
+      "imprisonment"
+    ],
+    "terms_total": 4,
+    "term_ratio": 0.25,
+    "section_hit": false,
+    "disclaimer": true,
+    "score": 0.537
+  },
+  {
+    "id": 5,
+    "question": "What constitutes criminal breach of trust under IPC?",
+    "category": "criminal",
+    "expected_acts": [
+      "IPC"
+    ],
+    "sources_returned": [
+      "Indian Penal Code, 1860",
+      "Bharatiya Nagarik Suraksha Sanhita, 2023",
+      "Bharatiya Nyaya Sanhita, 2023"
+    ],
+    "answer_snippet": "**What the Indian Penal Code says about criminal breach of trust**\n\n1. **Basic definition \u2013 Section\u202f405, IPC**  \n   - A person who is **entrusted with property or with control over property** commits criminal breach of trust when he **dishonestly** does any of the following:  \n     a) **misappropria",
+    "elapsed_s": 25.27,
+    "act_hit": true,
+    "terms_found": [
+      "entrustment",
+      "dishonestly",
+      "misappropriate"
+    ],
+    "terms_total": 4,
+    "term_ratio": 0.75,
+    "section_hit": false,
+    "disclaimer": true,
+    "score": 0.712
+  },
+  {
+    "id": 6,
+    "question": "What is cheating under IPC and what is its punishment?",
+    "category": "criminal",
+    "expected_acts": [
+      "IPC"
+    ],
+    "sources_returned": [
+      "Indian Penal Code, 1860",
+      "Protection of Children from Sexual Offences Act, 2012",
+      "Bharatiya Nagarik Suraksha Sanhita, 2023",
+      "Bharatiya Nyaya Sanhita, 2023"
+    ],
+    "answer_snippet": "**What \u201ccheating\u201d means (as defined in the statutes you provided)**  \n\n- **Section\u202f319 of the Bharatiya Nyaya Sanhita,\u202f2023** says that a person *cheats by personation* when he **pretends to be some other person** (real or imaginary) or **substitutes one person for another**, or represents that he o",
+    "elapsed_s": 21.84,
+    "act_hit": true,
+    "terms_found": [
+      "dishonestly"
+    ],
+    "terms_total": 5,
+    "term_ratio": 0.2,
+    "section_hit": false,
+    "disclaimer": true,
+    "score": 0.52
+  },
+  {
+    "id": 7,
+    "question": "What is dacoity and what is the punishment?",
+    "category": "criminal",
+    "expected_acts": [
+      "IPC"
+    ],
+    "sources_returned": [
+      "Indian Penal Code, 1860",
+      "Bharatiya Nyaya Sanhita, 2023"
+    ],
+    "answer_snippet": "**What is \u201cdacoity\u201d?**  \n\n- Under **Section\u202f391 of the Indian Penal Code, 1860**, *dacoity* means a robbery (or an attempt at robbery) that is carried out by **five or more persons acting together**. The same definition is restated in **Section\u202f310(1) of the Bharatiya Nyaya Sanhita,\u202f2023**, which sa",
+    "elapsed_s": 20.25,
+    "act_hit": false,
+    "terms_found": [
+      "five or more",
+      "rigorous imprisonment",
+      "seven years"
+    ],
+    "terms_total": 5,
+    "term_ratio": 0.6,
+    "section_hit": false,
+    "disclaimer": true,
+    "score": 0.31
+  },
+  {
+    "id": 8,
+    "question": "What is the punishment for causing grievous hurt?",
+    "category": "criminal",
+    "expected_acts": [
+      "IPC"
+    ],
+    "sources_returned": [
+      "Indian Penal Code, 1860",
+      "Bharatiya Nyaya Sanhita, 2023"
+    ],
+    "answer_snippet": "**Punishment for causing grievous hurt**\n\n| Situation | Law that applies | Punishment |\n|-----------|------------------|------------|\n| **General case** \u2013 a person voluntarily causes grievous hurt (any of the injuries listed in Section\u202f116 of the Bharatiya Nyaya Sanhita, 2023) | **Section\u202f325, India",
+    "elapsed_s": 33.42,
+    "act_hit": true,
+    "terms_found": [
+      "seven years",
+      "fine"
+    ],
+    "terms_total": 4,
+    "term_ratio": 0.5,
+    "section_hit": false,
+    "disclaimer": true,
+    "score": 0.625
+  },
+  {
+    "id": 9,
+    "question": "What is criminal defamation under IPC?",
+    "category": "criminal",
+    "expected_acts": [
+      "IPC"
+    ],
+    "sources_returned": [
+      "Indian Penal Code, 1860",
+      "Protection of Children from Sexual Offences Act, 2012",
+      "Bharatiya Nagarik Suraksha Sanhita, 2023",
+      "Bharatiya Nyaya Sanhita, 2023"
+    ],
+    "answer_snippet": "**What the law says (based on the sections you have provided)**  \n\n- The definition of defamation that is available to us is in **Section\u202f356 of the\u202fBharatiya\u202fNyaya\u202fSanhita,\u202f2023**. It states that a person who, by spoken or written words, signs, or visible representations, makes or publishes any imp",
+    "elapsed_s": 36.7,
+    "act_hit": true,
+    "terms_found": [
+      "imputation",
+      "reputation"
+    ],
+    "terms_total": 5,
+    "term_ratio": 0.4,
+    "section_hit": false,
+    "disclaimer": true,
+    "score": 0.59
+  },
+  {
+    "id": 10,
+    "question": "What is criminal trespass under IPC?",
+    "category": "criminal",
+    "expected_acts": [
+      "IPC"
+    ],
+    "sources_returned": [
+      "Indian Penal Code, 1860",
+      "Bharatiya Nagarik Suraksha Sanhita, 2023",
+      "Bharatiya Nyaya Sanhita, 2023"
+    ],
+    "answer_snippet": "**Criminal trespass under the Indian Penal Code (IPC)**  \n\n- **Section\u202f441, IPC** \u2013 *\u201cCriminal trespass.\u201d*  \n  > \u201cWhoever enters into or upon property in the possession of another with intent to commit an offence or to intimidate, insult or annoy any person in possession of such property, or, having",
+    "elapsed_s": 27.36,
+    "act_hit": true,
+    "terms_found": [
+      "property",
+      "possession"
+    ],
+    "terms_total": 5,
+    "term_ratio": 0.4,
+    "section_hit": false,
+    "disclaimer": true,
+    "score": 0.59
+  }
+]
